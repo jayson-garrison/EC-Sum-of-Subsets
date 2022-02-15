@@ -1,6 +1,6 @@
 # basic interface for a generic genetic algorithm
 
-def GeneticAlgorithm():
+class GenericGA():
 
     def __init__(self):
         pass
