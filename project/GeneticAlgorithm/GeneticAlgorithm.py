@@ -1,5 +1,5 @@
 
-from numpy import size
+import numpy as np
 from Utils.GenericGA import GenericGA
 import random as rand
 
@@ -8,15 +8,20 @@ from project.GeneticAlgorithm.Chromosome import Chromosome
 
 class GeneticAlgorithm(GenericGA):
 
-    def __init__(self, init_population, k, upper):
+    def __init__(self, init_population, num_elites, k, upper):
         """
         init the Genetic Algorithm
 
         @param init_population -> the initial population of solutions, is a list of lists
+        @param num_elites -> the number of elites to keep in the pool
         @param k -> desired sum for all elements in any subset to add up to be leq than
-        @param upper -> the highest value in the whole set
+        @param upper -> the highest possible value in the whole set
         """
         super().__init__()
+        # number of elites to keep
+        self.num_elites = num_elites
+        # upper limit
+        self.upper = upper
         # desired k
         self.k = k
         # init the pool given a read csv
@@ -62,14 +67,14 @@ class GeneticAlgorithm(GenericGA):
                 selection_probabilities.append( (total_fitness / soln.getFitness() ) / min_cum_fitness)
 
             # determine all parent pairs using wheel selection
-            for chrome in self.pool.poolAsList():
+            for amt in range(self.pool.size() - self.num_elites):
 
                 parents = (rand.choices(self.pool.poolAsList(), weights=selection_probabilities),\
                         rand.choices(self.pool.poolAsList(), weights=selection_probabilities) )
 
                 parent_set.append(parents)
 
-            # return list of length pool.size() of parent pairs for crossover
+            # return list of length pool.size() - num_elites of parent pairs for crossover
             return parent_set
 
         elif selection == 'r':
@@ -80,9 +85,31 @@ class GeneticAlgorithm(GenericGA):
             print("error: invalid selection method")    
 
 
-    def crossover(self, parents, technique):
+    def crossover(self, parents, technique = 'u', n = 1):
+        """
+        given a set of parents, crossover using a given technique
+
+        @param parents -> the list of parents to crossover, is a list of tuples (parent1, parent2)
+        @param technique 
+                        -> u for uniform (default)
+
+                        -> n-pt for n-point
+        @param n -> n used for n-pt
+        """
         super().crossover(parents)
-        if technique == 'x':
+        if technique == 'u':
+            child_pool = list()
+            for pair in parents:
+                child = np.zeros(self.upper)
+                for idx in range(self.upper):
+                    which = rand.randint(0,1)
+                    if which == 0:
+                        child[idx] = pair[0].getChromosome()[idx]
+                    else:
+                        child[idx] = pair[1].getChromosome()[idx]
+                child_pool.append(child)
+
+        elif technique == 'n-pt':
             pass
         else:
             print("error: invalid crossover technique")
@@ -103,7 +130,7 @@ class GeneticAlgorithm(GenericGA):
             # mutation sucessful
             if mutation_chance <= rate * 100:
                 # generate a set of random indicies to flip
-                while (size(flips) < num_bits):
+                while (len(flips) < num_bits):
                     flip_index = rand.randint(0, chrome.vectorSize() - 1)
                     while flip_index in flips:
                         flip_index = rand.randint(0, chrome.vectorSize())
@@ -114,8 +141,18 @@ class GeneticAlgorithm(GenericGA):
                         chrome.getChromosome()[idx] == 1
                     else:
                         chrome.getChromosome()[idx] == 0
-                
 
+                # update the solution to reflect the mutated chromosome        
+                chrome.updateSolution()
 
+    def generation(self):
+        """
+        after selection, crossover, then mutation, a new generation is formed of the children with the elites
+        
+        thus, the pool is reformed
+        """
+        # find the elites, add them to new pool
+        # put children in the new pool
+        pass
 
 

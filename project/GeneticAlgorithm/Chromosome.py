@@ -33,7 +33,10 @@ class Chromosome(GenericChromosome):
         """
         updates the solution based on the chromosome
         """
-        pass
+        self.solution.clear()
+        for idx in range(self.vectorSize() - 1):
+            if self.chrome[idx] == 1:
+                self.solution.add(idx + 1)
     
     def getChromosome(self):
         """
