@@ -7,12 +7,12 @@ class GenericGA():
 
     def select_parents(pool):
         # need fitness and selection routines (roulette, etc.)
-        pass
+        print('~~~~~~~~~~selection begin~~~~~~~~~~')
 
-    def crossover(parent1, parent2):
-        pass
+    def crossover(parents):
+        print("~~~~~~~~~~crossover begin~~~~~~~~~~")
 
     def mutation(rate):
-        pass
+        print("~~~~~~~~~~mutation begin~~~~~~~~~~")
 
     # where do we put fitness fx?

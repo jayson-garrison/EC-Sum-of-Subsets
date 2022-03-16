@@ -1,7 +1,9 @@
 from project.Utils.GenericPool import GenericPool
 
 class Pool(GenericPool):
-
+    """
+    Is a pool of chromosomes
+    """
     def __init__(self) -> None:
         super().__init__()
 
@@ -19,3 +21,6 @@ class Pool(GenericPool):
 
     def size(self):
         return super().size()
+    
+    def poolAsList(self):
+        return self.pool
