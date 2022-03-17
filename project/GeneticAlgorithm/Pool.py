@@ -1,11 +1,17 @@
+from project.GeneticAlgorithm.Chromosome import Chromosome
 from project.Utils.GenericPool import GenericPool
+from project.GeneticAlgorithm.Chromosome import Chromosome
 
 class Pool(GenericPool):
     """
     Is a pool of chromosomes
     """
-    def __init__(self) -> None:
+    def __init__(self, given_population = list()) -> None:
         super().__init__()
+        if len(given_population) != 0:
+            for creature in given_population:
+                self.pool.add( creature )
+            
 
     def add(self, chromosome):
         return super().add(chromosome)

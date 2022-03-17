@@ -1,4 +1,3 @@
-
 import numpy as np
 from Utils.GenericGA import GenericGA
 import random as rand
@@ -8,27 +7,27 @@ from project.GeneticAlgorithm.Chromosome import Chromosome
 
 class GeneticAlgorithm(GenericGA):
 
-    def __init__(self, init_population, num_elites, k, upper):
+    def __init__(self, init_population, num_elites, k, range_):
         """
         init the Genetic Algorithm
 
         @param init_population -> the initial population of solutions, is a list of lists
-        @param num_elites -> the number of elites to keep in the pool
+        @param num_elites -> the number of elites to keep in the pool each generation
         @param k -> desired sum for all elements in any subset to add up to be leq than
-        @param upper -> the highest possible value in the whole set
+        @param range_ -> (a,b) where a and b are the upper and lower limits of possible values in the set
         """
         super().__init__()
         # number of elites to keep
         self.num_elites = num_elites
         # upper limit
-        self.upper = upper
+        self.range_ = range_
         # desired k
         self.k = k
         # init the pool given a read csv
         self.pool = Pool()
         # create chromosomes
         for soln in init_population:
-            self.pool.add( Chromosome(soln, upper, self.k) )
+            self.pool.add( Chromosome(soln, range_, self.k) )
         
 
     def select_parents(self, selection = 'w' ):
@@ -100,14 +99,15 @@ class GeneticAlgorithm(GenericGA):
         if technique == 'u':
             child_pool = list()
             for pair in parents:
-                child = np.zeros(self.upper)
-                for idx in range(self.upper):
+                child = np.zeros(self.range_[1]-self.range_[0])
+                for idx in range(self.range_[1]-self.range_[0]):
                     which = rand.randint(0,1)
                     if which == 0:
                         child[idx] = pair[0].getChromosome()[idx]
                     else:
                         child[idx] = pair[1].getChromosome()[idx]
-                child_pool.append(child)
+
+                child_pool.append(Chromosome(self.range_, self.k, list(), child))
 
         elif technique == 'n-pt':
             pass
@@ -145,14 +145,47 @@ class GeneticAlgorithm(GenericGA):
                 # update the solution to reflect the mutated chromosome        
                 chrome.updateSolution()
 
-    def generation(self):
+    def generation(self, children):
         """
         after selection, crossover, then mutation, a new generation is formed of the children with the elites
         
         thus, the pool is reformed
+
+        @param children -> the children to reform the pool with and create a new generation
         """
+        ## create the new pool with all children
+        new_pool = Pool(children)
         # find the elites, add them to new pool
-        # put children in the new pool
+
+        # list of all fitnesses
+        self.fitnesses = list()
+        for chrome in self.pool():
+            self.fitnesses.add(chrome.getFitness())
+
+        # find the elites, add them to new pool
+        for _ in range(self.num_elites):
+            elite_fitness = max(self.fitnesses)
+            elite = self.pool.get( self.fitnesses.index(elite_fitness) )
+            new_pool.add(elite)
+            self.fitnesses.remove(elite_fitness)
+
+        # can add past pools to a generations list?
+        #self.pool.removeAll()
+        self.pool = new_pool
+    def propagate():
+        pass
+
+    def statistics(self):
+        """
+        prints statistics regarding the genetic algorithm process in solving the current problem
+        """
+        # print average fitness in this generation
+        avg = sum(self.fitnesses) / len(self.fitnesses)
+        print(f"Average fitness over {len(self.fitnesses)} instances: {avg}")
+        # print top three best fit solns
+
+        # perhaps print the fitness landscape
+
         pass
 
 

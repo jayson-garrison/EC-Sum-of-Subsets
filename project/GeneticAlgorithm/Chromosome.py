@@ -4,16 +4,20 @@ import numpy as np
 
 class Chromosome(GenericChromosome):
     
-    def __init__(self, solution, max, k) -> None:
+    def __init__(self, range_, k, solution = list(), chrome = None) -> None:
         super().__init__(solution)
         # used for fast calculation of fitness (sum of all values in soln)
         self.solution = solution
-        self.chrome = np.zeros(max)
         self.k = k
 
-        # construct a one-hot vector for the solutions for each value in the soln
-        for number in solution:
-            self.chrome[number - 1] = 1
+        if chrome != None:
+            self.updateSolution()
+        else:
+            self.chrome = np.zeros(range_[1] - range_[0])
+        
+            # construct a one-hot vector for the solutions for each value in the soln
+            for number in solution:
+                self.chrome[number - 1] = 1
         
         self.fitness = fitness_function(self.solution, self.chrome)
 
