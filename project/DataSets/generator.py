@@ -1,5 +1,6 @@
 import random as rand
 import pandas as pd
+import csv
 
 generate = True
 print_to_csv = True
@@ -41,9 +42,15 @@ if generate:
     #print(full_set)
 
 if print_to_csv:
-    subs = pd.DataFrame(subsets)
-    print(subs)
-    subs.to_csv("project/DataSets/toy_sets.csv")
+    # subs = pd.DataFrame(subsets)
+    # print(subs)
+    # subs.to_csv("project/DataSets/toy_sets.csv")
+
+    with open('project/DataSets/toy_sets1.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        for set_ in subsets:
+            writer.writerow(set_)
+        
 
     #s = pd.DataFrame(list(full_set))
     #s.to_csv("full_toy_set.csv")

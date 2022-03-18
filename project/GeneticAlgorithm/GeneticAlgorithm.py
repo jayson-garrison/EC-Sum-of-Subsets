@@ -2,8 +2,8 @@ import numpy as np
 from Utils.GenericGA import GenericGA
 import random as rand
 
-from project.GeneticAlgorithm.Pool import Pool
-from project.GeneticAlgorithm.Chromosome import Chromosome
+from GeneticAlgorithm.Pool import Pool
+from GeneticAlgorithm.Chromosome import Chromosome
 
 class GeneticAlgorithm(GenericGA):
 
@@ -27,7 +27,8 @@ class GeneticAlgorithm(GenericGA):
         self.pool = Pool()
         # create chromosomes
         for soln in init_population:
-            self.pool.add( Chromosome(soln, range_, self.k) )
+            #print(soln)
+            self.pool.add( Chromosome(self.range_, self.k, soln) )
         
 
     def select_parents(self, selection = 'w' ):
@@ -55,10 +56,15 @@ class GeneticAlgorithm(GenericGA):
             selection_probabilities = list()
 
             # determine total cumulative fitness of all chromosomes
-            total_fitness = sum(self.pool.poolAsList())
+            #total_fitness = sum(self.pool.poolAsList())
+
+            total_fitness = 0
+            for creature in self.pool.poolAsList():
+                total_fitness += creature.getFitness()
 
             # determine the aggregate reverse fitness in the minimization
             for soln in self.pool.poolAsList():
+                # if we have soln.getFitness() == 0 then we have the soln!
                 min_cum_fitness += total_fitness / soln.getFitness() 
 
             # calculate the weights based on the minimization
@@ -68,12 +74,13 @@ class GeneticAlgorithm(GenericGA):
             # determine all parent pairs using wheel selection
             for amt in range(self.pool.size() - self.num_elites):
 
-                parents = (rand.choices(self.pool.poolAsList(), weights=selection_probabilities),\
-                        rand.choices(self.pool.poolAsList(), weights=selection_probabilities) )
+                parents = (rand.choices(self.pool.poolAsList(), weights=selection_probabilities)[0],\
+                        rand.choices(self.pool.poolAsList(), weights=selection_probabilities)[0] )
 
                 parent_set.append(parents)
 
             # return list of length pool.size() - num_elites of parent pairs for crossover
+            print(parent_set[0])
             return parent_set
 
         elif selection == 'r':
@@ -94,8 +101,10 @@ class GeneticAlgorithm(GenericGA):
 
                         -> n-pt for n-point
         @param n -> n used for n-pt
+
+        @returns the child pool
         """
-        super().crossover(parents)
+        super().crossover()
         if technique == 'u':
             child_pool = list()
             for pair in parents:
@@ -103,18 +112,23 @@ class GeneticAlgorithm(GenericGA):
                 for idx in range(self.range_[1]-self.range_[0]):
                     which = rand.randint(0,1)
                     if which == 0:
+                        #print(type(pair[0]))
+                        #print(pair[0])
                         child[idx] = pair[0].getChromosome()[idx]
                     else:
+                        #print(type(pair[1]))
+                        #print(pair[1])
                         child[idx] = pair[1].getChromosome()[idx]
 
                 child_pool.append(Chromosome(self.range_, self.k, list(), child))
 
+            return child_pool
         elif technique == 'n-pt':
             pass
         else:
             print("error: invalid crossover technique")
 
-    def mutation(self, num_bits, rate = 0.5):
+    def mutation(self, num_bits, rate = 0.05):
         """
         mutate each chromosome in the pool given a probability
 
@@ -124,7 +138,7 @@ class GeneticAlgorithm(GenericGA):
         """
         super().mutation()
 
-        for chrome in self.pool:
+        for chrome in self.pool.poolAsList():
             mutation_chance = rand.randint(1, 100)
             flips = set()
             # mutation sucessful
@@ -159,12 +173,12 @@ class GeneticAlgorithm(GenericGA):
 
         # list of all fitnesses
         self.fitnesses = list()
-        for chrome in self.pool():
-            self.fitnesses.add(chrome.getFitness())
+        for chrome in self.pool.poolAsList():
+            self.fitnesses.append(chrome.getFitness())
 
         # find the elites, add them to new pool
         for _ in range(self.num_elites):
-            elite_fitness = max(self.fitnesses)
+            elite_fitness = min(self.fitnesses) # min!!
             elite = self.pool.get( self.fitnesses.index(elite_fitness) )
             new_pool.add(elite)
             self.fitnesses.remove(elite_fitness)
@@ -172,8 +186,40 @@ class GeneticAlgorithm(GenericGA):
         # can add past pools to a generations list?
         #self.pool.removeAll()
         self.pool = new_pool
-    def propagate():
-        pass
+    def propagate(self, selection_method, crossover_technique, n = 1, num_bits = 1, mutation_rate = 0.05 ):
+        """
+        propagate the genetic algorithm one generation forward.
+
+        @param selection_method -> method used in selecting parents
+
+                                -> w for roulette wheel
+
+                                -> r for rank
+
+                                -> t for tournament
+        
+        @param crossover_technique -> technique used for crossover
+
+                                -> u for uniform
+
+                                -> n-pt for n-point
+        @param n -> n used for the number of split points if using n-pt crossover (1 is standard)
+        
+        @param num_bits -> number of bits to mutate upon successful mutation (1 is standard)
+
+        @param mutation_rate -> the mutation rate (0.05 is standard)
+        
+        """
+        # select parents
+        parents = self.select_parents(selection_method)
+        # crossover
+        childs = self.crossover(parents, crossover_technique, n)
+        # generate
+        self.generation(childs)
+        # mutate
+        self.mutation(num_bits, mutation_rate)
+        # stats
+        self.statistics()
 
     def statistics(self):
         """
@@ -181,11 +227,11 @@ class GeneticAlgorithm(GenericGA):
         """
         # print average fitness in this generation
         avg = sum(self.fitnesses) / len(self.fitnesses)
-        print(f"Average fitness over {len(self.fitnesses)} instances: {avg}")
+        print(f"Average fitness over {len(self.fitnesses) + self.num_elites} instances: {avg}")
         # print top three best fit solns
-
+        best = min(self.fitnesses)
+        pos = self.fitnesses.index(best)
+        print(f"Best solution: {self.pool.poolAsList()[pos].getSolution()}")
         # perhaps print the fitness landscape
-
-        pass
 
 

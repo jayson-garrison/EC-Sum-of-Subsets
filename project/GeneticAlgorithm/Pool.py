@@ -1,6 +1,6 @@
-from project.GeneticAlgorithm.Chromosome import Chromosome
-from project.Utils.GenericPool import GenericPool
-from project.GeneticAlgorithm.Chromosome import Chromosome
+#from project.GeneticAlgorithm.Chromosome import Chromosome
+from Utils.GenericPool import GenericPool
+#from project.GeneticAlgorithm.Chromosome import Chromosome
 
 class Pool(GenericPool):
     """
@@ -8,9 +8,10 @@ class Pool(GenericPool):
     """
     def __init__(self, given_population = list()) -> None:
         super().__init__()
+        self.pool = list()
         if len(given_population) != 0:
             for creature in given_population:
-                self.pool.add( creature )
+                self.pool.append( creature )
             
 
     def add(self, chromosome):
@@ -30,3 +31,5 @@ class Pool(GenericPool):
     
     def poolAsList(self):
         return self.pool
+
+    #def chooseRandom(self)
