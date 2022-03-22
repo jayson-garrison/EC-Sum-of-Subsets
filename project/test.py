@@ -8,3 +8,5 @@ for i in range(5):
     print(rand.choices(l, weights=w), end="")
 
 print(np.zeros(0).size) #is 0
+
+print(l.index(1))

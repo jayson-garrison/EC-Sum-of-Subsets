@@ -15,6 +15,8 @@ from GeneticAlgorithm import GeneticAlgorithm as ga
 
 sample_population = list()
 
+key = list()
+
 # open file in read mode
 with open('project/DataSets/toy_sets1.csv', 'r') as read_obj:
     # pass the file object to reader() to get the reader object
@@ -24,11 +26,27 @@ with open('project/DataSets/toy_sets1.csv', 'r') as read_obj:
         # row variable is a list that represents a row in csv
         sample_population.append(list(map(int, row)))
 
+# open file in read mode
+with open('project/DataSets/toy_sets1_key.csv', 'r') as read_obj:
+    # pass the file object to reader() to get the reader object
+    csv_reader = reader(read_obj)
+    # Iterate over each row in the csv using reader object
+    for row in csv_reader:
+        # row variable is a list that represents a row in csv
+        # for element in row:
+        #     key.append(map(int, element))
+        key = (list(map(int, row)))
+
 #print(sample_population)
+# print(key)
+# print(key[0])
 
-genetic_alg = ga.GeneticAlgorithm(sample_population, 5, 17, (0, 20000))
+if True:
+    genetic_alg = ga.GeneticAlgorithm(sample_population, 5, 17, key)
 
-while(True):
-    genetic_alg.propagate('w', 'u', 1, 3, 0.05)
+    iter = 0
+    while(iter < 20):
+        genetic_alg.propagate('w', 'u', 1, 3, 0.05)
+        iter += 1
 
         

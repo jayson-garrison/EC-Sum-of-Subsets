@@ -9,13 +9,13 @@ full_set = [1,4,7,3,2] #list()
 
 subsets = list()
 
-size_of_set = 100 # can change this
+size_of_set = 1000 # can change this 100
 
-range_of_set = 2000 # can change this 
+range_of_set = 20000 # can change this 2000
 
 #subset_size = 5 # can change this
 
-number_of_subsets = 50 # can change this
+number_of_subsets = 150 # can change this 50
 
 if generate:
 
@@ -50,6 +50,11 @@ if print_to_csv:
         writer = csv.writer(file)
         for set_ in subsets:
             writer.writerow(set_)
+
+    with open('project/DataSets/toy_sets1_key.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        
+        writer.writerow(full_set)
         
 
     #s = pd.DataFrame(list(full_set))

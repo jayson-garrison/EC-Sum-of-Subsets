@@ -7,20 +7,20 @@ from GeneticAlgorithm.Chromosome import Chromosome
 
 class GeneticAlgorithm(GenericGA):
 
-    def __init__(self, init_population, num_elites, k, range_):
+    def __init__(self, init_population, num_elites, k, set_):
         """
         init the Genetic Algorithm
 
         @param init_population -> the initial population of solutions, is a list of lists
         @param num_elites -> the number of elites to keep in the pool each generation
         @param k -> desired sum for all elements in any subset to add up to be leq than
-        @param range_ -> (a,b) where a and b are the upper and lower limits of possible values in the set
+        @param set_ -> the whole set which is the basis of the init_population
         """
         super().__init__()
         # number of elites to keep
         self.num_elites = num_elites
         # upper limit
-        self.range_ = range_
+        self.set_ = set_
         # desired k
         self.k = k
         # init the pool given a read csv
@@ -28,7 +28,7 @@ class GeneticAlgorithm(GenericGA):
         # create chromosomes
         for soln in init_population:
             #print(soln)
-            self.pool.add( Chromosome(self.range_, self.k, soln) )
+            self.pool.add( Chromosome(self.set_, self.k, soln) )
         
 
     def select_parents(self, selection = 'w' ):
@@ -80,7 +80,7 @@ class GeneticAlgorithm(GenericGA):
                 parent_set.append(parents)
 
             # return list of length pool.size() - num_elites of parent pairs for crossover
-            print(parent_set[0])
+            #print(parent_set[0])
             return parent_set
 
         elif selection == 'r':
@@ -108,8 +108,8 @@ class GeneticAlgorithm(GenericGA):
         if technique == 'u':
             child_pool = list()
             for pair in parents:
-                child = np.zeros(self.range_[1]-self.range_[0])
-                for idx in range(self.range_[1]-self.range_[0]):
+                child = np.zeros(len(self.set_))
+                for idx in range(len(self.set_)):
                     which = rand.randint(0,1)
                     if which == 0:
                         #print(type(pair[0]))
@@ -120,7 +120,7 @@ class GeneticAlgorithm(GenericGA):
                         #print(pair[1])
                         child[idx] = pair[1].getChromosome()[idx]
 
-                child_pool.append(Chromosome(self.range_, self.k, list(), child))
+                child_pool.append(Chromosome(self.set_, self.k, list(), child))
 
             return child_pool
         elif technique == 'n-pt':

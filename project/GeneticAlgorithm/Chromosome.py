@@ -4,21 +4,24 @@ import numpy as np
 
 class Chromosome(GenericChromosome):
     
-    def __init__(self, range_, k, solution = list(), chrome = np.zeros(0)) -> None:
+    def __init__(self, key, k, solution = list(), chrome = np.zeros(0)) -> None:
         super().__init__(solution)
         # used for fast calculation of fitness (sum of all values in soln)
         self.solution = solution
         self.k = k
+        self.key = key # the key used to determine the values in the chromosome
 
         if chrome.size != 0:
             self.chrome = chrome
             self.updateSolution()
         else:
-            self.chrome = np.zeros(range_[1] - range_[0])
-        
+            self.chrome = np.zeros(len(self.key))
+            #print(self.chrome)
             # construct a one-hot vector for the solutions for each value in the soln
-            for number in range(len(solution)):
-                self.chrome[number - 1] = 1
+            for value in solution:
+                #if value in solution:
+                i = solution.index(value)
+                self.chrome[i] = 1
         
         self.fitness = fitness_function(self.solution, self.chrome, self.k)
 
@@ -39,9 +42,9 @@ class Chromosome(GenericChromosome):
         updates the solution based on the chromosome
         """
         self.solution.clear()
-        for idx in range(self.vectorSize() - 1):
+        for idx in range(self.chrome.size - 1):
             if self.chrome[idx] == 1:
-                self.solution.append(idx + 1)
+                self.solution.append(self.key[idx])
     
     def getChromosome(self):
         """
