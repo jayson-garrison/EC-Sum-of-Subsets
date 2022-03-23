@@ -45,7 +45,7 @@ if True:
     genetic_alg = ga.GeneticAlgorithm(sample_population, 5, 17, key)
 
     iter = 0
-    while(iter < 20):
+    while(iter < 10):
         genetic_alg.propagate('w', 'u', 1, 3, 0.05)
         iter += 1
 

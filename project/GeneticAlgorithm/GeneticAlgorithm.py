@@ -2,6 +2,8 @@ import numpy as np
 from Utils.GenericGA import GenericGA
 import random as rand
 
+from matplotlib import pyplot as plt
+
 from GeneticAlgorithm.Pool import Pool
 from GeneticAlgorithm.Chromosome import Chromosome
 
@@ -233,5 +235,8 @@ class GeneticAlgorithm(GenericGA):
         pos = self.fitnesses.index(best)
         print(f"Best solution: {self.pool.poolAsList()[pos].getSolution()}")
         # perhaps print the fitness landscape
+
+        plt.plot(self.fitnesses)
+        plt.show()
 
 
