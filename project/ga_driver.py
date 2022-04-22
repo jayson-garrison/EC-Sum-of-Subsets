@@ -18,7 +18,7 @@ sample_population = list()
 key = list()
 
 # open file in read mode
-with open('project/DataSets/toy_sets1.csv', 'r') as read_obj:
+with open('project/DataSets/sets.csv', 'r') as read_obj:
     # pass the file object to reader() to get the reader object
     csv_reader = reader(read_obj)
     # Iterate over each row in the csv using reader object
@@ -27,7 +27,7 @@ with open('project/DataSets/toy_sets1.csv', 'r') as read_obj:
         sample_population.append(list(map(int, row)))
 
 # open file in read mode
-with open('project/DataSets/toy_sets1_key.csv', 'r') as read_obj:
+with open('project/DataSets/sets_key.csv', 'r') as read_obj:
     # pass the file object to reader() to get the reader object
     csv_reader = reader(read_obj)
     # Iterate over each row in the csv using reader object
@@ -42,11 +42,12 @@ with open('project/DataSets/toy_sets1_key.csv', 'r') as read_obj:
 # print(key[0])
 
 if True:
-    genetic_alg = ga.GeneticAlgorithm(sample_population, 5, 17, key)
+    #genetic_alg = ga.GeneticAlgorithm(sample_population, 5, 17, key)
+    genetic_alg = ga.GeneticAlgorithm(sample_population, 10, 1300000, key)
 
     iter = 0
-    while(iter < 10):
-        genetic_alg.propagate('w', 'u', 1, 3, 0.05)
+    while(iter < 150):
+        genetic_alg.propagate('w', 'u', 'flip', 1, 10, 0.25)
         iter += 1
 
         

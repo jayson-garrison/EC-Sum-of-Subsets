@@ -5,25 +5,25 @@ import csv
 generate = True
 print_to_csv = True
 
-full_set = [1,4,7,3,2] #list()
+full_set = list() #[1,4,7,3,2] 
 
 subsets = list()
 
 size_of_set = 1000 # can change this 100
 
-range_of_set = 20000 # can change this 2000
+range_of_set = 100000 # can change this 20000
 
 #subset_size = 5 # can change this
 
-number_of_subsets = 150 # can change this 50
+number_of_subsets = 250 # can change this 50
 
 if generate:
 
     for i in range(size_of_set):
 
-        element = rand.randint(20, range_of_set) # was 0
+        element = rand.randint(1, range_of_set) # was 20
         while element in full_set:
-            element = rand.randint(20, range_of_set)
+            element = rand.randint(1, range_of_set)
         full_set.append(element)
 
     #print(full_set)
@@ -46,12 +46,12 @@ if print_to_csv:
     # print(subs)
     # subs.to_csv("project/DataSets/toy_sets.csv")
 
-    with open('project/DataSets/toy_sets1.csv', 'w', newline='') as file:
+    with open('project/DataSets/sets.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         for set_ in subsets:
             writer.writerow(set_)
 
-    with open('project/DataSets/toy_sets1_key.csv', 'w', newline='') as file:
+    with open('project/DataSets/sets_key.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         
         writer.writerow(full_set)

@@ -10,3 +10,8 @@ for i in range(5):
 print(np.zeros(0).size) #is 0
 
 print(l.index(1))
+
+for idx, item in enumerate(l):
+    l[idx] = item + 1
+
+print(l)
