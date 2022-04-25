@@ -1,0 +1,2 @@
+Best Solultion: [] 
+Accuracy to the true value k:17 for an estimated:0 -> 0.0 

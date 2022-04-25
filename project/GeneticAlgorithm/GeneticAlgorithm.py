@@ -1,7 +1,10 @@
+from pickle import bytes_types
 import numpy as np
 from Utils.GenericGA import GenericGA
 import random as rand
 import scipy.stats as ss
+
+import os
 
 from matplotlib import pyplot as plt
 
@@ -20,6 +23,7 @@ class GeneticAlgorithm(GenericGA):
         @param set_ -> the whole set which is the basis of the init_population
         """
         super().__init__()
+        self.trap = False
         self.gen = 0
         # number of elites to keep
         self.num_elites = num_elites
@@ -72,7 +76,12 @@ class GeneticAlgorithm(GenericGA):
                 if (soln.getFitness() == 0):
                     print("*****Optimal Solution Found!")
                     print(soln.getSolution())
-                    exit()
+
+                    # report
+                    self.statistics()
+                    self.solution_export()
+
+                    return -1
                 else:
                     min_cum_fitness += total_fitness / soln.getFitness() 
 
@@ -169,6 +178,7 @@ class GeneticAlgorithm(GenericGA):
         @returns the child pool
         """
         super().crossover()
+        
         if technique == 'u':
             child_pool = list()
             for pair in parents:
@@ -187,28 +197,64 @@ class GeneticAlgorithm(GenericGA):
                 child_pool.append(Chromosome(self.set_, self.k, list(), child))
 
             return child_pool
+
         elif technique == 'n-pt':
             # the index to partition the parents
-            pdex = int(self.pool.get(0).vectorSize() / n)
-            which = 0
-            idx = 0
+            child_pool = list()
+
+            
             for pair in parents:
+                pdex = int(self.pool.get(0).vectorSize() / (n + 1))
+                which = 0
+                idx = 0
+
                 child = list()
+                #print(pair[0].getChromosome())
+                #print(pair[1].getChromosome())
                 # do while not done
                 count = 0
-                while count < n:
+                while count < n + 1:
                     if which == 0:
                         which = 1
-                        child.append(pair[0][idx:idx+pdex])
+                        # handle the end case
+                        if count == n:
+                            section = pair[0].getChromosome()[idx:]
+                            for val in section:
+                                child.append(val)
+                        else:
+                            section = pair[0].getChromosome()[idx:idx+pdex]
+                            for val in section:
+                                child.append(val)
+                            #child.append(pair[0].getChromosome()[idx:idx+pdex])
+
                         idx = idx + pdex
                     else:
                         which = 0
-                        child.append(pair[1][idx:idx+pdex])
+                        # handle the end case
+                        if count == n:
+                            section = pair[1].getChromosome()[idx:]
+                            for val in section:
+                                child.append(val)
+
+                        else:
+                            section = pair[1].getChromosome()[idx:idx+pdex]
+                            for val in section:
+                                child.append(val)
+
                         idx = idx + pdex
+
                     count += 1
                 # convert list to np.array and make a chrome``
+                child_chrome = np.array(child)
+                #print(child_chrome)
+                #exit()
+                child_pool.append(Chromosome(self.set_, self.k, list(), child_chrome))
+            
+            return child_pool
+
         else:
             print("error: invalid crossover technique")
+            exit()
 
     def mutation(self, num_bits, method, rate = 0.05):
         """
@@ -230,13 +276,15 @@ class GeneticAlgorithm(GenericGA):
             mutation_chance = rand.randint(1, 100)
             flips = set()
             # mutation sucessful
-            if method == 'flip':
-                if mutation_chance <= rate * 100:
+            if mutation_chance <= rate * 100:
+            
+                if method == 'flip':
+                
                     # generate a set of random indicies to flip
                     while (len(flips) < num_bits):
                         flip_index = rand.randint(0, chrome.vectorSize() - 1)
                         while flip_index in flips:
-                            flip_index = rand.randint(0, chrome.vectorSize())
+                            flip_index = rand.randint(0, chrome.vectorSize() - 1)
                         flips.add(flip_index)
                     
                     for idx in flips:
@@ -247,8 +295,69 @@ class GeneticAlgorithm(GenericGA):
 
                     # update the solution to reflect the mutated chromosome        
                     chrome.updateSolution()
+
                 elif method == 'fredinc':
-                    pass
+
+                    # seperate ones and zeros
+                    ones = list()
+                    zeros = list()
+                    for idx, value in enumerate(chrome.getChromosome()):
+                        if value == 1:
+                            ones.append(idx)
+                        else:
+                            zeros.append(idx)
+
+                    which = rand.randint(1, 100)
+
+                    reduce = list()
+
+                    if which < 90 and len(ones) != 0:
+                        # force reduction
+                        # pick num_bits randomly
+
+                        item = rand.choice(ones)
+                        i = 0
+
+                        if len(ones) <= num_bits:
+                            # proceed
+                            for index in ones:
+                                chrome.getChromosome()[index] = 0
+                        else:
+                            while item not in reduce and i < num_bits:
+                                reduce.append(item)
+                                item = rand.choice(ones)
+                                i += 1
+
+                            for index in reduce:
+                                chrome.getChromosome()[index] = 0
+                        
+                    else:
+                        # force increase
+
+                        if len(zeros) == 0:
+                            break
+
+                        item = rand.choice(zeros)
+                        i = 0
+
+                        if len(zeros) <= num_bits:
+                            # proceed
+                            for index in zeros:
+                                chrome.getChromosome()[index] = 1
+                        else:
+                            while item not in reduce and i < num_bits:
+                                reduce.append(item)
+                                item = rand.choice(zeros)
+                                i += 1
+
+                            for index in reduce:
+                                chrome.getChromosome()[index] = 1
+                        
+                    chrome.updateSolution()
+                    
+                else:
+                    print('error: invalid mutation technique')
+                    exit()
 
     def generation(self, children):
         """
@@ -263,9 +372,7 @@ class GeneticAlgorithm(GenericGA):
         # find the elites, add them to new pool
 
         # list of all fitnesses
-        self.fitnesses = list()
-        for chrome in self.pool.poolAsList():
-            self.fitnesses.append(chrome.getFitness())
+        # MOVED TO PROPAGATE!
 
         # find the elites, add them to new pool
         for _ in range(self.num_elites):
@@ -277,7 +384,7 @@ class GeneticAlgorithm(GenericGA):
         # can add past pools to a generations list?
         #self.pool.removeAll()
         self.pool = new_pool
-    def propagate(self, selection_method, crossover_technique, mutation_method, n = 1, num_bits = 1, mutation_rate = 0.05 ):
+    def propagate(self, dirname, filename, selection_method, crossover_technique, mutation_method, n = 1, num_bits = 1, mutation_rate = 0.05 ):
         """
         propagate the genetic algorithm one generation forward.
 
@@ -301,27 +408,53 @@ class GeneticAlgorithm(GenericGA):
         @param mutation_rate -> the mutation rate (0.05 is standard)
         
         """
+        
         # print the stats for generation 0
         if self.gen == 0:
+            self.path = f'project/GeneticAlgorithm/Visuals/{dirname}/ga_{filename}_S-{selection_method}_X-{crossover_technique}_M-{mutation_method}_n-{n}_NFlips-{num_bits}_Mrate-{mutation_rate}/'
+            exists = os.path.exists(self.path)
+            if not exists:
+                os.makedirs(self.path)
+                print('DIR CREATED')
+
+            # remove all files in dir
+            else:
+                for file in os.listdir(self.path):
+                    os.remove(self.path + file)
+            
+            
             self.fitnesses = list()
             for chrome in self.pool.poolAsList():
                 self.fitnesses.append(chrome.getFitness())
 
-            self.statistics()
+            avg = self.statistics()
             self.gen += 1
+
+        # define the list of fitnesses
+        self.fitnesses = list()
+        for chrome in self.pool.poolAsList():
+            self.fitnesses.append(chrome.getFitness())
 
         # select parents
         parents = self.select_parents(selection_method)
-        # crossover
-        childs = self.crossover(parents, crossover_technique, n)
-        # generate
-        self.generation(childs)
-        # mutate
-        self.mutation(num_bits, mutation_method, mutation_rate)
-        # stats
-        self.statistics()
+        
+        if parents != -1:
+            
+            # crossover
+            childs = self.crossover(parents, crossover_technique, n)
+            # generate
+            self.generation(childs)
+            # mutate
+            self.mutation(num_bits, mutation_method, mutation_rate)
+            # stats
+            avg = self.statistics()
 
-        self.gen += 1
+            self.gen += 1
+
+            return avg
+        else:
+            self.trap()
+            return avg
 
     def statistics(self):
         """
@@ -337,13 +470,34 @@ class GeneticAlgorithm(GenericGA):
         # print top three best fit solns
         best = min(self.fitnesses)
         print(best)
-        pos = self.fitnesses.index(best)
-        print(f"Best solution: {self.pool.poolAsList()[pos].getSolution()}")
+        self.best_idx = self.fitnesses.index(best)
+        print(f"Best solution: {self.pool.poolAsList()[self.best_idx].getSolution()}")
         # perhaps print the fitness landscape
 
         plt.plot(self.fitnesses)
         plt.axhline(y=avg, color='r', linestyle='-')
         plt.title(f"Fitness Landscape for Solutions in Generation {self.gen}")
-        plt.show()
+        plt.savefig(self.path + f'Generation_{self.gen}')
+        plt.close()
+
+        return avg
+        #plt.show()
+
+    def solution_export(self):
+        with open(self.path + 'results.txt', 'w') as file:
+            file.write(f'Best Solultion: {self.pool.poolAsList()[self.best_idx].getSolution()} \n')
+            actual = sum(self.pool.poolAsList()[self.best_idx].getSolution())
+            accuracy = actual / self.k
+            file.write(f'Accuracy to the true value k:{self.k} for an estimated:{actual} -> {accuracy} \n')
+            file.write(f'Final generation: {self.gen}\n')
+            file.write(f'Average fitness in final generation: {sum(self.fitnesses) / len(self.fitnesses)}\n')
+
+            file.close()
+
+    def trap(self):
+        self.trap = True
+
+    def trapped(self):
+        return self.trap
 
 

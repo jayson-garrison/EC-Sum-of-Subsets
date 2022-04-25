@@ -1,0 +1,2 @@
+Best Solultion: [246, 161, 106, 214, 233, 19, 12, 91, 200, 167, 162, 60, 182, 128, 158, 15, 27, 194, 62, 61] 
+Accuracy to the true value k:2500 for an estimated:2498 -> 0.9992 

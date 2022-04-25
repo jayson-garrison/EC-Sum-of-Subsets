@@ -15,3 +15,7 @@ for idx, item in enumerate(l):
     l[idx] = item + 1
 
 print(l)
+
+n = np.array([1,2,3,4,5])
+print(n)
+print(n[3:])

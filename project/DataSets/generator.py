@@ -9,13 +9,19 @@ full_set = list() #[1,4,7,3,2]
 
 subsets = list()
 
-size_of_set = 1000 # can change this 100
+# for og 1000
+# ds 100 1000 10000
+size_of_set = 10000 # can change this 100
 
+# for og 100000
+# ds 250 10000 100000
 range_of_set = 100000 # can change this 20000
 
 #subset_size = 5 # can change this
 
-number_of_subsets = 250 # can change this 50
+# for og 250
+# 250 500 10000
+number_of_subsets = 1000 # can change this 50
 
 if generate:
 
@@ -46,12 +52,12 @@ if print_to_csv:
     # print(subs)
     # subs.to_csv("project/DataSets/toy_sets.csv")
 
-    with open('project/DataSets/sets.csv', 'w', newline='') as file:
+    with open('project/DataSets/dataset3.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         for set_ in subsets:
             writer.writerow(set_)
 
-    with open('project/DataSets/sets_key.csv', 'w', newline='') as file:
+    with open('project/DataSets/dataset3_key.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         
         writer.writerow(full_set)
