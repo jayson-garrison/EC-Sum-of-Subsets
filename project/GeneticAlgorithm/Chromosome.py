@@ -45,6 +45,8 @@ class Chromosome(GenericChromosome):
         for idx in range(self.chrome.size - 1):
             if self.chrome[idx] == 1:
                 self.solution.append(self.key[idx])
+                
+        self.fitness = fitness_function(self.solution, self.chrome, self.k)
     
     def getChromosome(self):
         """

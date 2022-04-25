@@ -289,9 +289,9 @@ class GeneticAlgorithm(GenericGA):
                     
                     for idx in flips:
                         if chrome.getChromosome()[idx] == 0:
-                            chrome.getChromosome()[idx] == 1
+                            chrome.getChromosome()[idx] = 1
                         else:
-                            chrome.getChromosome()[idx] == 0
+                            chrome.getChromosome()[idx] = 0
 
                     # update the solution to reflect the mutated chromosome        
                     chrome.updateSolution()
