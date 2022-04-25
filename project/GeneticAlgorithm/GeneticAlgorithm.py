@@ -453,8 +453,8 @@ class GeneticAlgorithm(GenericGA):
 
             return avg
         else:
-            self.trap()
-            return avg
+            self.optimal()
+            return self.statistics()
 
     def statistics(self):
         """
@@ -494,7 +494,7 @@ class GeneticAlgorithm(GenericGA):
 
             file.close()
 
-    def trap(self):
+    def optimal(self):
         self.trap = True
 
     def trapped(self):
