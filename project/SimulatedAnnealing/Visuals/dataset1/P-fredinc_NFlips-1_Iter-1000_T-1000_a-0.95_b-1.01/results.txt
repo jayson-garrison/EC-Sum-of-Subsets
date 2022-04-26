@@ -1,0 +1,4 @@
+Best solution: [246, 161, 106, 169, 214, 250]
+Estimated: 1146 compared to k: 2500
+Metric: 0.4584
+Total iter: 63808

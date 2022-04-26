@@ -144,9 +144,10 @@ class SimulatedAnnealing:
                 # print(newS.getSolution())
                 # print(self.soln.getSolution())
                 r = rand.random()
-                phi = np.exp( (self.h(self.soln) - self.h(newS)) / self.temp)
+                phi = np.exp( 1* ( (self.h(self.soln) - self.h(newS)) / self.temp) )
+                #phi = 1 / (1 + np.exp( -1* ( (self.h(self.soln) - self.h(newS)) / self.temp) ) )
                 #print(f'r: {r} phi: {phi} r < phi')
-                if ( (self.h(newS) < self.h(self.soln) or r < phi) ): # and sum(newS.getSolution()) < self.k
+                if ( (self.h(newS) < self.h(self.soln) or r < phi) ): # or r < phi
                     self.soln = newS
 
                 estimate = sum(self.soln.getSolution())
@@ -155,7 +156,7 @@ class SimulatedAnnealing:
                 else:
                     epsilon = -1
 
-                if (estimate == self.k or (epsilon > .9999 and epsilon <= 1.0)):
+                if (estimate == self.k or (epsilon > .999 and epsilon <= 1.0)):
                     # we stop
                     self.statistics()
                     print('***********Optimal Solution Found!')
