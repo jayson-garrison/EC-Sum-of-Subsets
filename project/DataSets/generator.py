@@ -20,7 +20,7 @@ range_of_set = 100000 # can change this 20000
 #subset_size = 5 # can change this
 
 # for og 250
-# 250 500 10000
+# 250 500 1000
 number_of_subsets = 1000 # can change this 50
 
 if generate:

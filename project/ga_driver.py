@@ -17,9 +17,9 @@ sample_population = list()
 
 key = list()
 
-fname = 'dataset2.csv'
-fkname = 'dataset2_key.csv'
-dirname = 'dataset2'
+fname = 'dataset3.csv'
+fkname = 'dataset3_key.csv'
+dirname = 'dataset3'
 # open file in read mode
 with open('project/DataSets/' + fname, 'r') as read_obj:
     # pass the file object to reader() to get the reader object
@@ -60,29 +60,29 @@ if True:
     stop = 100 # 50 100 150
     configurations1 = [
 
-        ('w','u','flip', 10, 2, 0.05),
-        ('w','n-pt','flip', 10, 2, 0.05),
-        ('w','u','fredinc', 10, 2, 0.05),
-        ('w','n-pt','fredinc', 10, 2, 0.05),
+        #('w','u','flip', 10, 2, 0.05),
+        #('w','n-pt','flip', 10, 2, 0.05),
+        #('w','u','fredinc', 10, 2, 0.05),
+        #('w','n-pt','fredinc', 10, 2, 0.05),
 
-        ('r','u','flip', 10, 2, 0.05),
-        ('r','n-pt','flip', 10, 2, 0.05),
+        #('r','u','flip', 10, 2, 0.05),
+        #('r','n-pt','flip', 10, 2, 0.05),
         ('r','u','fredinc', 10, 2, 0.05),
-        ('r','n-pt','fredinc', 10, 2, 0.05),
+        #('r','n-pt','fredinc', 10, 2, 0.05),
 
 
     ]
     configurations2 = [
 
-        ('w','u','flip', 50, 2, 0.05),
-        ('w','n-pt','flip', 50, 2, 0.05),
-        ('w','u','fredinc', 50, 2, 0.05),
-        ('w','n-pt','fredinc', 50, 2, 0.05),
+        #('w','u','flip', 50, 2, 0.05),
+        #('w','n-pt','flip', 50, 2, 0.05),
+        #('w','u','fredinc', 50, 2, 0.05),
+        #('w','n-pt','fredinc', 50, 2, 0.05),
 
-        ('r','u','flip', 50, 2, 0.05),
-        ('r','n-pt','flip', 50, 2, 0.05),
+        #('r','u','flip', 50, 2, 0.05),
+        #('r','n-pt','flip', 50, 2, 0.05),
         ('r','u','fredinc', 50, 2, 0.05),
-        ('r','n-pt','fredinc', 50, 2, 0.05),
+        #('r','n-pt','fredinc', 50, 2, 0.05),
 
     ]
     configurations3 = [
@@ -99,20 +99,20 @@ if True:
 
     ]
 
-    k = 2500000 # 2500 2500000 25000000
+    k = 25000000 # 2500 2500000 25000000
 
     try:
-        for config in configurations2:
+        for config in configurations3:
             iter = 0
             convergence = False
             #genetic_alg = ga.GeneticAlgorithm(sample_population, 5, k, key)
-            genetic_alg = ga.GeneticAlgorithm(sample_population, 10, k, key)
-            #genetic_alg = ga.GeneticAlgorithm(sample_population, 100, k, key)
+            #genetic_alg = ga.GeneticAlgorithm(sample_population, 10, k, key)
+            genetic_alg = ga.GeneticAlgorithm(sample_population, 100, k, key)
             while(iter < stop and not genetic_alg.trapped() and not convergence):
                 avg = genetic_alg.propagate(dirname, fname, config[0], config[1], config[2], config[3], config[4], config[5])
                 iter += 1
                 epsilon = (k - avg) / k
-                if (epsilon > .999 and epsilon <= 1.0):
+                if (epsilon > .9999 and epsilon <= 1.0):
                     convergence = True
                 if iter == stop or convergence:
                     genetic_alg.solution_export()

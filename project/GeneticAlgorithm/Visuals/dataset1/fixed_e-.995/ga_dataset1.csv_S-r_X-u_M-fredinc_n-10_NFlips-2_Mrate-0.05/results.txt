@@ -1,0 +1,4 @@
+Best Solultion: [246, 161, 106, 169, 214, 233, 19, 12, 91, 22, 149, 200, 167, 162, 52, 182, 158, 15, 17, 62, 61] 
+Accuracy to the true value k:2500 for an estimated:2498 -> 0.9992 
+Final generation: 101
+Average fitness in final generation: 12.122448979591837

@@ -1,6 +1,7 @@
 from GeneticAlgorithm.Chromosome import Chromosome
 import numpy as np
 import random as rand
+import os
 
 class SimulatedAnnealing:
     
@@ -116,12 +117,24 @@ class SimulatedAnnealing:
         self.alpha = alpha
         self.beta = beta
 
-        self.path = f'project/SimulatedAnnealing/Visuals/{dirname}/'
+        self.path = f'project/SimulatedAnnealing/Visuals/{dirname}/P-{perturb_params[1]}_NFlips-{perturb_params[0]}_Iter-{iterations}_T-{initial_temp}_a-{alpha}_b-{beta}/'
 
+        exists = os.path.exists(self.path)
+        if not exists:
+            os.makedirs(self.path)
+            print('DIR CREATED')
+
+        # remove all files in dir
+        else:
+            for file in os.listdir(self.path):
+                os.remove(self.path + file)
+    
         self.statistics()
+        total_itera = 0
         itera = 0
         while itera < 50: # what is this condition? perhaps convergence
             for _ in range(self.iterations):
+                total_itera += 1
                 soln = list()
                 for item in self.soln.getSolution():
                     soln.append(item)
@@ -135,11 +148,27 @@ class SimulatedAnnealing:
                 #print(f'r: {r} phi: {phi} r < phi')
                 if ( (self.h(newS) < self.h(self.soln) or r < phi) ): # and sum(newS.getSolution()) < self.k
                     self.soln = newS
+
+                estimate = sum(self.soln.getSolution())
+                if estimate != 0:
+                    epsilon = (estimate) / self.k
+                else:
+                    epsilon = -1
+
+                if (estimate == self.k or (epsilon > .9999 and epsilon <= 1.0)):
+                    # we stop
+                    self.statistics()
+                    print('***********Optimal Solution Found!')
+                    self.solution_export(total_itera)
+                    print(f'iterations: {itera}')
+                    exit()
+
             self.statistics()
             self.temp = self.alpha * self.temp
             self.iterations = int(self.beta * self.iterations)
             itera += 1
-
+        print('out of time.')
+        self.solution_export(total_itera)
     def h(self, chromosome):
         '''
         obtain the fitness of the solution
@@ -151,4 +180,15 @@ class SimulatedAnnealing:
         print(f'Current solution:{s}\n')
         print(f'Current sum: {sum(s)} Compared to k: {self.k}\n')
         print(f'Convergence metric: {sum(s) / self.k}\n')
+
+    def solution_export(self, itera):
+        s = self.soln.getSolution()
+        est = sum(s)
+        with open(self.path + 'results.txt', 'w') as file:
+            file.write(f'Best solution: {s}\n')
+            file.write(f'Estimated: {est} compared to k: {self.k}\n')
+            file.write(f'Metric: {est / self.k}\n')
+            file.write(f'Total iter: {itera}\n')
+
+            file.close()
 

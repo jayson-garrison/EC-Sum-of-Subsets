@@ -6,9 +6,9 @@ sample_population = list()
 
 key = list()
 
-fname = 'dataset1.csv'
-fkname = 'dataset1_key.csv'
-dirname = 'dataset1'
+fname = 'dataset3.csv'
+fkname = 'dataset3_key.csv'
+dirname = 'dataset3'
 # open file in read mode
 with open('project/DataSets/' + fname, 'r') as read_obj:
     # pass the file object to reader() to get the reader object
@@ -33,9 +33,9 @@ with open('project/DataSets/' + fkname, 'r') as read_obj:
 #print(key)
 # print(key[0])
 
-k = 2500 # 2500 2500000 25000000
+k = 25000000 # 2500 2500000 25000000
 
-perts = (3, 'fredinc') # (2, 'fredinc')
+perts = (2, 'flip') # (1, 'fredinc')
 
 simulated_anneal = sa.SimulatedAnnealing(k, key, sample_population)
 
